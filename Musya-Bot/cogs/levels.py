@@ -398,6 +398,41 @@ class Levels(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(name="synclevels")
+    @commands.has_permissions(administrator=True)
+    async def synclevels(self, ctx):
+        """[Админ] Пересчитать и выдать роли за уровни всем участникам"""
+        embed = self._level_embed("⏳ Синхронизация...", "Пересчитываю роли за уровни...")
+        msg = await ctx.send(embed=embed)
+
+        count = 0
+        leaderboard = await db.get_leaderboard(ctx.guild.id, 9999)
+
+        for user_data in leaderboard:
+            member = ctx.guild.get_member(user_data['user_id'])
+            if not member:
+                continue
+
+            level = self.calculate_level(user_data['exp'])
+            await db.set_level(member.id, ctx.guild.id, level)
+
+            for req_level, role_id in config.LEVEL_ROLES.items():
+                if level >= req_level and role_id:
+                    role = ctx.guild.get_role(role_id)
+                    if role and role not in member.roles:
+                        try:
+                            await member.add_roles(role)
+                            count += 1
+                        except discord.Forbidden:
+                            pass
+
+        embed = self._level_embed(
+            "✅ Синхронизация завершена",
+            f"Выдано **{count}** ролей участникам.",
+            config.COLOR_SUCCESS
+        )
+        await msg.edit(embed=embed)
+
 
 async def setup(bot):
     await bot.add_cog(Levels(bot))
