@@ -435,5 +435,56 @@ class Levels(commands.Cog):
         await msg.edit(embed=embed)
 
 
+    async def check_level_up(self, member: discord.Member, guild: discord.Guild,
+                             user_data: dict, channel=None):
+        """Проверить повышение уровня и выдать роли"""
+        current_level = user_data['level']
+        new_level = self.calculate_level(user_data['exp'])
+
+        if new_level > current_level:
+            await db.set_level(member.id, guild.id, new_level)
+
+            embed = self._level_embed(
+                "🎉 Уровень повышен!",
+                f"{member.mention} достиг **{new_level} уровня**!",
+                config.COLOR_SUCCESS
+            )
+            embed.set_thumbnail(url=member.display_avatar.url)
+
+            # Проверяем роли за уровень
+            for req_level, role_id in config.LEVEL_ROLES.items():
+                if new_level >= req_level and role_id:
+                    role = guild.get_role(role_id)
+                    if role is None:
+                        print(f"❌ Роль с ID {role_id} не найдена на сервере!")
+                        continue
+                    if role in member.roles:
+                        print(f"ℹ️ У {member} уже есть роль {role.name}")
+                        continue
+                    try:
+                        await member.add_roles(role)
+                        embed.add_field(
+                            name="🏆 Новая роль!",
+                            value=f"Получена роль: {role.mention}",
+                            inline=False
+                        )
+                        print(f"✅ Выдана роль {role.name} для {member}")
+                    except discord.Forbidden:
+                        print(f"❌ НЕТ ПРАВ выдать роль {role.name} для {member}")
+                    except Exception as e:
+                        print(f"❌ Ошибка выдачи роли: {e}")
+
+            # Отправляем сообщение
+            target_channel = None
+            if config.LEVEL_UP_CHANNEL:
+                target_channel = guild.get_channel(config.LEVEL_UP_CHANNEL)
+            if not target_channel and channel:
+                target_channel = channel
+
+            if target_channel:
+                await target_channel.send(embed=embed)
+            
+            print(f"🎉 {member} повысился до {new_level} уровня! EXP: {user_data['exp']}")
+
 async def setup(bot):
     await bot.add_cog(Levels(bot))
