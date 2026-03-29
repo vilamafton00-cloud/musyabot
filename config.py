@@ -13,13 +13,22 @@ BOT_TOKEN = os.getenv("DISCORD_TOKEN", "YOUR_TOKEN_HERE")
 # Префикс команд
 PREFIX = "!"
 
+
+# ===== КАНАЛЫ ПРИВЕТСТВИЙ =====
+# ID канала для приветствий (замени на свой или используй !setwelcome)
+WELCOME_CHANNEL = None
+
+# ID канала для прощаний (замени на свой или используй !setgoodbye)
+GOODBYE_CHANNEL = None
+
+
 # ===== СИСТЕМА УРОВНЕЙ =====
 # EXP за сообщение (мин, макс)
-EXP_PER_MESSAGE_MIN = 15
-EXP_PER_MESSAGE_MAX = 25
+EXP_PER_MESSAGE_MIN = 5
+EXP_PER_MESSAGE_MAX = 15
 
 # EXP за минуту в войсе
-EXP_PER_VOICE_MINUTE = 15
+EXP_PER_VOICE_MINUTE = 5
 
 # Кулдаун EXP за сообщения (секунды) — чтобы не спамили
 MESSAGE_EXP_COOLDOWN = 10
