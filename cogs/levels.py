@@ -249,7 +249,7 @@ class Levels(commands.Cog):
                 inline=False
             )
 
-        await ctx.send(embed=embed)
+                await ctx.reply(embed=embed, mention_author=False, delete_after=60)
 
     # ===== КОМАНДА !leaderboard =====
     @commands.command(name="leaderboard", aliases=["top", "lb"])
