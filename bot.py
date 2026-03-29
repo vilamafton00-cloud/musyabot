@@ -39,7 +39,8 @@ class MusyaBot(commands.Bot):
             'cogs.levels',
             'cogs.analytics',
             'cogs.reaction_roles',
-            'cogs.utility'
+            'cogs.utility',
+            'cogs.welcome'
         ]
 
         for cog in cogs:
@@ -112,8 +113,15 @@ async def help_command(ctx, category: str = None):
             inline=True
         )
 
+        embed.add_field(
+            name="👋 Приветствия",
+            value=f"`{config.PREFIX}help welcome`\n"
+                  "setwelcome, setgoodbye, тесты...",
+            inline=True
+        )
         embed.set_footer(text="Musya-Bot • A-Studio",
                          icon_url=bot.user.display_avatar.url)
+    
         return await ctx.send(embed=embed)
 
     # Подкатегории
@@ -233,6 +241,28 @@ async def help_command(ctx, category: str = None):
         for cmd, desc in commands_list:
             embed.add_field(name=cmd, value=desc, inline=False)
 
+    elif category in ["welcome", "приветствия", "привет"]:
+        embed = discord.Embed(
+            title="👋 Приветствия и прощания",
+            color=config.COLOR_SUCCESS,
+            timestamp=datetime.utcnow()
+        )
+        commands_list = [
+            ("`!setwelcome #канал`", "Установить канал приветствий"),
+            ("`!setgoodbye #канал`", "Установить канал прощаний"),
+            ("`!testwelcome`", "Тестировать приветствие (в ЛС)"),
+            ("`!testgoodbye`", "Тестировать прощание (в ЛС)"),
+        ]
+        for cmd, desc in commands_list:
+            embed.add_field(name=cmd, value=desc, inline=False)
+        embed.add_field(
+            name="ℹ️ Информация",
+            value="Бот автоматически отправляет приветствие в ЛС новым участникам "
+                  "и прощание тем кто уходит. Также можно настроить каналы на сервере.",
+            inline=False
+        )
+
+    
     else:
         embed = discord.Embed(
             title="❌ Категория не найдена",
