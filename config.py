@@ -56,10 +56,20 @@ MOD_LOG_CHANNEL = None
 LEVEL_UP_CHANNEL = None
 
 # ===== ЦВЕТА EMBED =====
-COLOR_PRIMARY = 0x5865F2     # Синий (основной)
+COLOR_PRIMARY = 0xED4245     # Синий (основной)
 COLOR_SUCCESS = 0x57F287     # Зелёный
 COLOR_WARNING = 0xFEE75C     # Жёлтый
 COLOR_ERROR = 0xED4245       # Красный
 COLOR_MODERATION = 0xE67E22  # Оранжевый
 COLOR_LEVEL = 0x9B59B6       # Фиолетовый
 COLOR_ANALYTICS = 0x1ABC9C   # Бирюзовый
+
+
+# ===== КАНАЛЫ ПРИВЕТСТВИЙ =====
+# ID канала для приветствий (замени на свой или используй !setwelcome)
+WELCOME_CHANNEL = None
+
+# ID канала для прощаний (замени на свой или используй !setgoodbye)
+GOODBYE_CHANNEL = None
+
+
