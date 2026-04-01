@@ -19,7 +19,7 @@ class MusyaBot(commands.Bot):
         super().__init__(
             command_prefix=config.PREFIX,
             intents=intents,
-            help_command=None,  # Отключаем стандартную команду help
+            help_command=None,
             activity=discord.Activity(
                 type=discord.ActivityType.watching,
                 name="за A-Studio | !help"
@@ -29,11 +29,9 @@ class MusyaBot(commands.Bot):
 
     async def setup_hook(self):
         """Загрузка модулей при запуске"""
-        # Инициализация базы данных
         await db.init_db()
         print("✅ База данных инициализирована")
 
-        # Загрузка cogs
         cogs = [
             'cogs.moderation',
             'cogs.levels',
@@ -112,19 +110,17 @@ async def help_command(ctx, category: str = None):
                   "avatar, userinfo, ping, poll...",
             inline=True
         )
-
         embed.add_field(
             name="👋 Приветствия",
             value=f"`{config.PREFIX}help welcome`\n"
                   "setwelcome, setgoodbye, тесты...",
             inline=True
         )
+
         embed.set_footer(text="Musya-Bot • A-Studio",
                          icon_url=bot.user.display_avatar.url)
-    
-        return await ctx.send(embed=embed)
+        return await ctx.send(embed=embed, delete_after=120)
 
-    # Подкатегории
     category = category.lower()
 
     if category in ["mod", "moderation", "модерация"]:
@@ -165,6 +161,7 @@ async def help_command(ctx, category: str = None):
             ("`!setlevel @участник <уровень>`", "⚙️ Установить уровень (Админ)"),
             ("`!setexp @участник <exp>`", "⚙️ Установить EXP (Админ)"),
             ("`!addexp @участник <exp>`", "⚙️ Добавить EXP (Админ)"),
+            ("`!synclevels`", "⚙️ Пересчитать роли всем (Админ)"),
         ]
         for cmd, desc in commands_list:
             embed.add_field(name=cmd, value=desc, inline=False)
@@ -262,23 +259,22 @@ async def help_command(ctx, category: str = None):
             inline=False
         )
 
-    
     else:
         embed = discord.Embed(
             title="❌ Категория не найдена",
-            description=f"Доступные категории: `mod`, `levels`, `analytics`, `rr`, `utility`",
+            description=f"Доступные категории: `mod`, `levels`, `analytics`, `rr`, `utility`, `welcome`",
             color=config.COLOR_ERROR
         )
 
     embed.set_footer(text="Musya-Bot • A-Studio", icon_url=bot.user.display_avatar.url)
-    await ctx.send(embed=embed)
+    await ctx.send(embed=embed, delete_after=120)
 
 
 # ===== ОБРАБОТКА ГЛОБАЛЬНЫХ ОШИБОК =====
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        return  # Игнорируем несуществующие команды
+        return
 
     if isinstance(error, commands.MissingPermissions):
         embed = discord.Embed(
@@ -307,7 +303,6 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=embed, delete_after=5)
         return
 
-    # Неизвестная ошибка
     print(f"Ошибка в команде {ctx.command}: {error}")
 
 
